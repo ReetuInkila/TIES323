@@ -20,14 +20,14 @@ class SmtpServer
         server.Bind(iep_smtp);
         server.Listen(1);
         Console.WriteLine("SMTP server started.");
-        listenSMTP(server);
+        listenSMTP(server, iep_smtp);
         Console.ReadKey();
         server.Close();
 
 
     }
 
-    private static void listenSMTP(Socket server)
+    private static void listenSMTP(Socket server, IPEndPoint iep_smtp)
     {
         while(true)
         {
@@ -35,10 +35,13 @@ class SmtpServer
             string client_ip = ((IPEndPoint)(client.RemoteEndPoint)).Address.ToString();
             string client_port = ((IPEndPoint)(client.RemoteEndPoint)).Port.ToString();
 
-            client.Send(Encoding.UTF8.GetBytes("220 TIES323 SMTP server\n"));
-            bool conversation = true;
+            client.Send(Encoding.UTF8.GetBytes("220"+ iep_smtp +" ESMTP Postfix\n"));
 
-            while(conversation)
+            string from = "";
+            string to = "";
+            StringBuilder data = new StringBuilder();
+
+            while(true)
             {
                 byte[] buffer = new byte[2048];
                 client.Receive(buffer);
@@ -48,7 +51,54 @@ class SmtpServer
                     new[] { "\r\n", "\r", "\n" },
                         StringSplitOptions.None
                 );
-                client.Send(Encoding.UTF8.GetBytes("250 OK\r\n"));
+                foreach (string line in lines)
+                {
+                    if (line.StartsWith("HELO"))
+                    {
+                        client.Send(Encoding.UTF8.GetBytes("250 Hello " +client_ip+", I am glad to meet you\r\n"));
+                    }
+                    else if (line.StartsWith("MAIL FROM:"))
+                    {
+                        from = line.Substring("MAIL FROM:".Length).Trim();
+                        client.Send(Encoding.UTF8.GetBytes("250 OK\r\n"));
+                    }
+                    else if (line.StartsWith("RCPT TO:"))
+                    {
+                        to = line.Substring("RCPT TO:".Length).Trim();
+                        client.Send(Encoding.UTF8.GetBytes("250 OK\r\n"));
+                    }
+                    else if (line.ToUpper() == "DATA")
+                    {
+                        client.Send(Encoding.UTF8.GetBytes("354 End data with <CRLF>.<CRLF>\r\n"));
+                        while (true)
+                        {
+                            byte[] dataBuffer = new byte[2048];
+                            int bytesRead = client.Receive(dataBuffer);
+
+                            if (bytesRead == 0)
+                            {
+                                // Connection closed by the client
+                                client.Close();
+                                break;
+                            }
+
+                            string dataLine = Encoding.UTF8.GetString(dataBuffer, 0, bytesRead);
+                            data.Append(dataLine);
+                            Console.WriteLine(dataLine);
+
+                            if (dataLine == ".\r\n")
+                            {
+                                client.Send(Encoding.UTF8.GetBytes("250 OK: queued as 12345\r\n"));
+                                break;
+                            }
+                        }
+                    }
+                    else if (line.ToUpper() == "QUIT")
+                    {
+                        client.Send(Encoding.UTF8.GetBytes("221 Bye\r\n"));
+                        break;
+                    }
+                }
             }
         }
     }
