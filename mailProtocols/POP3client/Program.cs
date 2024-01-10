@@ -15,47 +15,75 @@ class Pop3Client
 {
     static void Main(string[] args)
     {
-        /// Read credentials from the configuration file
+        // Read credentials from the configuration file
         var jsonString = File.ReadAllText("secrets.json");
-        Credentials credentials = JsonSerializer.Deserialize<Credentials>(jsonString);
+        Credentials credentials = JsonSerializer.Deserialize<Credentials>(jsonString) ?? new Credentials();
 
         string pop3Server = "127.0.0.1";
         int pop3Port = 110; // Default POP3 port
 
-        using (TcpClient client = new TcpClient(pop3Server, pop3Port))
+        Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        try
         {
-            using (Stream stream = client.GetStream())
-            using (StreamReader reader = new StreamReader(stream, Encoding.ASCII))
-            using (StreamWriter writer = new StreamWriter(stream, Encoding.ASCII))
+            socket.Connect(pop3Server, pop3Port);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Virhe: " + ex.Message);
+            Console.ReadKey();
+            return;
+        }
+        NetworkStream ns = new NetworkStream(socket);
+
+        StreamReader reader = new StreamReader(ns);
+        StreamWriter writer = new StreamWriter(ns);
+
+        bool user = false;
+        bool pswd = false;
+        bool transaction = false;
+        bool quit = false;
+
+        while(true)
+        {
+            string msg = reader.ReadLine();
+            Console.WriteLine(msg);
+
+            string[] list = msg.Split(' ');
+
+            if(!user && list[0] == "+OK")
             {
-                // Read the welcome message from the server
-                Console.WriteLine(reader.ReadLine());
-
                 // Send USER command
-                SendCommand(writer, "USER "+credentials.Username);
-
-                // Read the response for USER command
-                Console.WriteLine(reader.ReadLine());
-
+                SendCommand(writer, "USER " + credentials.Username);
+                user = true;
+            } 
+            else if (user && !pswd && list[0] == "+OK")
+            {
                 // Send PASS command
-                SendCommand(writer, "PASS "+credentials.Password);
-
-                // Read the response for PASS command
-                Console.WriteLine(reader.ReadLine());
-
+                SendCommand(writer, "PASS " + credentials.Password);
+                pswd = true;
+            } 
+            else if (user && pswd && !transaction && list[0] == "+OK")
+            {
                 // Send LIST command
                 SendCommand(writer, "LIST");
-
-                // Read the response for LIST command
-                Console.WriteLine(reader.ReadLine());
-
+                transaction = true;
+            }
+            else if (transaction && list[0] == ".")
+            {
                 // Send QUIT command
                 SendCommand(writer, "QUIT");
-
-                // Read the response for QUIT command
-                Console.WriteLine(reader.ReadLine());
+                quit = true;
+            }
+            else if(quit)
+            {
+                break;
             }
         }
+        writer.Close();
+        reader.Close();
+        ns.Close();
+        socket.Close();
+
     }
 
     static void SendCommand(StreamWriter writer, string command)
@@ -64,4 +92,3 @@ class Pop3Client
         writer.Flush();
     }
 }
-
