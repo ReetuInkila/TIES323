@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-namespace SMTPserver
-{
     class Inbox
     {
         private List<string> mail;
@@ -22,4 +20,3 @@ namespace SMTPserver
             return mail;
         }
     }
-}

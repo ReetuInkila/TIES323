@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "POP3client", "..\POP3client
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IMAPclient", "IMAPclient\IMAPclient.csproj", "{C1C54462-DFB7-4211-925A-36AD3B99C20C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mailServer", "mailServer\mailServer.csproj", "{2B1DD130-C3BE-407F-A884-74A4B79CE7BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{C1C54462-DFB7-4211-925A-36AD3B99C20C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1C54462-DFB7-4211-925A-36AD3B99C20C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1C54462-DFB7-4211-925A-36AD3B99C20C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B1DD130-C3BE-407F-A884-74A4B79CE7BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B1DD130-C3BE-407F-A884-74A4B79CE7BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B1DD130-C3BE-407F-A884-74A4B79CE7BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B1DD130-C3BE-407F-A884-74A4B79CE7BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9396B40A-9000-4E15-884F-74ABAC125D58} = {28F5BC1B-C2F9-4F23-B8A8-344C2B99CA7D}
