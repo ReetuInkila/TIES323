@@ -114,11 +114,10 @@ class SmtpServer
                                 client.Close();
                                 conversation = false;
                                 break;
-                            }
+                            }    
 
                             // Convert received bytes to string
-                            string dataLine = Encoding.UTF8.GetString(dataBuffer, 0, dataBytesRead);
-                            data.Append(dataLine);
+                            string dataLine = Encoding.UTF8.GetString(dataBuffer, 0, dataBytesRead);                        
 
                             // Check for end of email data
                             if (dataLine == ".\r\n")
@@ -133,6 +132,9 @@ class SmtpServer
                                 // Respond to end of data and simulate email queuing
                                 client.Send(Encoding.UTF8.GetBytes("250 OK\r\n"));
                                 break;
+                            }
+                            else{
+                                data.Append(dataLine);
                             }
                         }
                     }

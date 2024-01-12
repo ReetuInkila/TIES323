@@ -76,10 +76,26 @@ class Pop3Server
                         client.Send(Encoding.UTF8.GetBytes("+OK Password accepted\r\n"));
                         break;
                     case "LIST":
-                        foreach (string mail in inbox.GetMail())
+                        List<string> mailList = inbox.GetMail();
+                        int size = 0;
+                        foreach (string mail in mailList)
                         {
-                            client.Send(Encoding.UTF8.GetBytes(mail));
+                            size += mail.Length * sizeof(char);
                         }
+                        
+                        string response = string.Format("+OK {0} messages ({1} octets)\r\n", mailList.Count, size);
+                        client.Send(Encoding.UTF8.GetBytes(response));
+
+                        // Now, you might want to send the list of messages with their sizes as well
+                        foreach (string mail in mailList)
+                        {
+                            // Assuming you want to include the size of each message in the response
+                            string messageResponse = string.Format("{0} {1}\r\n", mailList.IndexOf(mail) + 1, mail.Length * sizeof(char));
+                            client.Send(Encoding.UTF8.GetBytes(messageResponse));
+                        }
+
+                        // End the list with a single dot
+                        client.Send(Encoding.UTF8.GetBytes(".\r\n"));
                         break;
                     case "QUIT":
                         client.Send(Encoding.UTF8.GetBytes("+OK Bye\r\n"));
