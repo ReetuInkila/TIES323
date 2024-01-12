@@ -1,22 +1,22 @@
 using System;
 using System.Collections.Generic;
 
-    class Inbox
+class Inbox
+{
+    private List<string> mail;
+
+    public Inbox()
     {
-        private List<string> mail;
-
-        public Inbox()
-        {
-            mail = new List<string>();
-        }
-
-        public void NewMail(string newMail)
-        {
-            mail.Add(newMail);
-        }
-
-        public List<string> GetMail()
-        {
-            return mail;
-        }
+        mail = new List<string>();
     }
+
+    public void NewMail(string newMail)
+    {
+        mail.Add(newMail);
+    }
+
+    public List<string> GetMail()
+    {
+        return mail;
+    }
+}

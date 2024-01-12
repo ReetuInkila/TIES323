@@ -28,17 +28,16 @@ class SmtpServer
     /// Starts the SMTP server and listens for incoming client connections.
     /// </summary>
     /// <param name="iep_smtp">The SMTP server's endpoint.</param>
-    private static void StartSMTPserver(IPEndPoint iep_smtp)
+    private void StartSMTPserver(IPEndPoint iep_smtp)
     {
         // Create a socket for the server
         Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-        // Bind the server socket to the specified endpoint
+        // Create a socket for the server
         server.Bind(iep_smtp);
 
         // Set the server to listen for incoming connections
         server.Listen(1);
-        Console.WriteLine("SMTP server started.");
 
         while (true)
         {
@@ -70,11 +69,11 @@ class SmtpServer
                 }
 
                 // Convert received bytes to string
-                string client_msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                Console.WriteLine("[{0}:{1}]: {2}", client_ip, client_port, client_msg);
+                string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                Console.WriteLine("[{0}:{1}]: {2}", client_ip, client_port, msg);
 
                 // Split client message into lines
-                string[] lines = client_msg.Split(
+                string[] lines = msg.Split(
                     new[] { "\r\n", "\r", "\n" },
                     StringSplitOptions.None
                 );
@@ -83,7 +82,8 @@ class SmtpServer
                 foreach (string line in lines)
                 {
                     if (line.StartsWith("HELO"))
-                    {127.0.0.1:1025 client.Send(Encoding.UTF8.GetBytes("250 Hello " + client_ip + ", I am glad to meet you\r\n"));
+                    {
+                        client.Send(Encoding.UTF8.GetBytes("250 Hello " + client_ip + ", I am glad to meet you\r\n"));
                     }
                     else if (line.StartsWith("MAIL FROM:"))
                     {
@@ -128,7 +128,7 @@ class SmtpServer
                                 string emailContent = data.ToString();
 
                                 // Store the email content in the inbox
-                                inbox.NewMessage(emailContent);
+                                inbox.NewMail(emailContent);
 
                                 // Respond to end of data and simulate email queuing
                                 client.Send(Encoding.UTF8.GetBytes("250 OK\r\n"));
@@ -149,4 +149,3 @@ class SmtpServer
         }
     }
 }
-

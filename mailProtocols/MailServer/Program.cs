@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
-
+using System.Threading;
 
 class MailServer
 {
@@ -8,18 +7,22 @@ class MailServer
     {
         Inbox inbox = new Inbox();
 
-        Task.Run(() => StartSmtpServer(inbox, 1025));
+        Thread thread1 = new Thread(() => StartSmtpServer(inbox, 1025));
+        Thread thread2 = new Thread(() => StartPop3Server(inbox, 1100));
 
-        //Task.Run(() => StartPop3Server(inbox));
-
-        Console.WriteLine("Server listening ports:\nSMTP    1025\nPOP3    110");
-        Console.WriteLine("Press Enter to stop the server.");
-        Console.ReadLine();
+        thread1.Start();
+        thread2.Start();
     }
 
-    static async Task StartSmtpServer(Inbox inbox, int port)
+    static void StartSmtpServer(Inbox inbox, int port)
     {
         SmtpServer smtpServer = new SmtpServer(inbox, port);
         smtpServer.Start();
+    }
+
+    static void StartPop3Server(Inbox inbox, int port)
+    {
+        Pop3Server pop3Server = new Pop3Server(inbox, port);
+        pop3Server.Start();
     }
 }
