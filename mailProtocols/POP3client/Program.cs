@@ -20,7 +20,7 @@ class Pop3Client
         Credentials credentials = JsonSerializer.Deserialize<Credentials>(jsonString) ?? new Credentials();
 
         string pop3Server = "127.0.0.1";
-        int pop3Port = 1100; 
+        int pop3Port = 110; 
 
         Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         try

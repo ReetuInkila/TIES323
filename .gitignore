@@ -132,3 +132,4 @@ $RECYCLE.BIN/
 
 _NCrunch*
 mailProtocols/POP3client/secrets.json
+mailProtocols/IMAPclient/secrets.json
