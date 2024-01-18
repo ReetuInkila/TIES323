@@ -71,9 +71,9 @@ class IMAPClient
                 // Send QUIT command
                 counter ++;
                 SendCommand(writer, "a" + counter.ToString("000") + " logout\r");
-                quit = true;
+                state = "quit";
             }
-            else if(quit)
+            else if(state == "quit" && msg.StartsWith("a" + counter.ToString("000")+" OK"))
             {
                 break;
             }
