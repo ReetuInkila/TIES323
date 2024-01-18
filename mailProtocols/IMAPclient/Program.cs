@@ -19,7 +19,7 @@ class IMAPClient
         Credentials credentials = JsonSerializer.Deserialize<Credentials>(jsonString) ?? new Credentials();
 
         string imapServer = "127.0.0.1";
-        int imapPort = 143; 
+        int imapPort = 1430; 
 
         Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         try
@@ -57,7 +57,7 @@ class IMAPClient
             else if (state =="select" && msg.StartsWith("a" + counter.ToString("000")+" OK"))
             {
                 counter ++;
-                SendCommand(writer, "a" + counter.ToString("000")+" select inbox\r");
+                SendCommand(writer, "a" + counter.ToString("000")+" SELECT INBOX\r");
                 state = "fetch";
             }
             else if ( state == "fetch" && msg.StartsWith("a" + counter.ToString("000")+" OK"))
