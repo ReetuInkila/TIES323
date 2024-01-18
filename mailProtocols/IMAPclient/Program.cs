@@ -48,7 +48,7 @@ class IMAPClient
 
             string[] list = msg.Split(' ');
 
-            if(state == "auth" && list[1] == "OK")
+            if(state == "auth" && msg.StartsWith("* OK"))
             {
                 string command = "a" + counter.ToString("000")+" LOGIN " + credentials.Username + " \"" +credentials.Password+"\"\r";
                 SendCommand(writer, command);
@@ -63,7 +63,7 @@ class IMAPClient
             else if ( state == "fetch" && msg.StartsWith("a" + counter.ToString("000")+" OK"))
             {
                 counter ++;
-                SendCommand(writer, "a" + counter.ToString("000") + " FETCH 1:* (UID)\r");
+                SendCommand(writer, "a" + counter.ToString("000") + " FETCH 38:38 body[TEXT]\r");
                 state = "transaction";
             }
             else if (state == "transaction" && msg.StartsWith("a" + counter.ToString("000")+" OK"))
